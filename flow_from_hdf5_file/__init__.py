@@ -49,6 +49,10 @@ class BatchFromHDF5Mixin():
         self.split = split
         self.subset = subset
 
+    def reset_batchy_tracing(self):
+        if self.batch_y_tracing is not None:
+            self.batch_y_tracing = list()
+
     def _get_batches_of_transformed_samples(self, index_array):
         """Gets a batch of transformed samples.
         # Arguments
@@ -88,6 +92,9 @@ class BatchFromHDF5Mixin():
                 batch_y = self.labels[index_array]
             else:
                 return batch_x
+            
+            self.batch_y_tracing.append(batch_y)
+
             if self.sample_weight is None:
                 return batch_x, batch_y
             else:
@@ -174,6 +181,8 @@ class HDF5Iterator(BatchFromHDF5Mixin, Iterator):
                              .format(class_mode, self.allowed_class_modes))
         self.class_mode = class_mode
         self.dtype = dtype
+
+        self.batch_y_tracing = list()
 
         image_shape = None
         self.samples = 0
