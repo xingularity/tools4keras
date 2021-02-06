@@ -199,7 +199,10 @@ class HDF5Iterator(BatchFromHDF5Mixin, Iterator):
             class_start_end = dict()
             for one_class in classes:
                 num_images = h5f[one_class].shape[0]
-                class_start_end[one_class] = int(num_images * self.split[0]), int(num_images * self.split[1])
+                if self.split is not None:
+                    class_start_end[one_class] = int(num_images * self.split[0]), int(num_images * self.split[1])
+                else:
+                    class_start_end[one_class] = (0, num_images)
                 self.samples += class_start_end[one_class][1] - class_start_end[one_class][0]
 
                 if image_shape is None:
