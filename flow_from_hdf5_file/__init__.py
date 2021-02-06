@@ -34,9 +34,11 @@ class BatchFromHDF5Mixin():
                 validation_split is set in ImageDataGenerator.
         """
         self.image_data_generator = image_data_generator
+        self.enable_batchy_tracing = False
         if subset is not None:
             validation_split = self.image_data_generator._validation_split
             if subset == 'validation':
+                self.enable_batchy_tracing = True
                 split = (0, validation_split)
             elif subset == 'training':
                 split = (validation_split, 1)
@@ -92,8 +94,9 @@ class BatchFromHDF5Mixin():
                 batch_y = self.labels[index_array]
             else:
                 return batch_x
-            
-            self.batch_y_tracing.append(batch_y)
+
+            if self.enable_batchy_tracing:
+                self.batch_y_tracing.append(batch_y)
 
             if self.sample_weight is None:
                 return batch_x, batch_y
