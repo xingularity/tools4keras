@@ -34,9 +34,11 @@ class BatchFromHDF5Mixin():
                 validation_split is set in ImageDataGenerator.
         """
         self.image_data_generator = image_data_generator
+        self.enable_batchy_tracing = False
         if subset is not None:
             validation_split = self.image_data_generator._validation_split
             if subset == 'validation':
+                self.enable_batchy_tracing = True
                 split = (0, validation_split)
             elif subset == 'training':
                 split = (validation_split, 1)
@@ -92,8 +94,9 @@ class BatchFromHDF5Mixin():
                 batch_y = self.labels[index_array]
             else:
                 return batch_x
-            
-            self.batch_y_tracing.append(batch_y)
+
+            if self.enable_batchy_tracing:
+                self.batch_y_tracing.append(batch_y)
 
             if self.sample_weight is None:
                 return batch_x, batch_y
@@ -196,7 +199,10 @@ class HDF5Iterator(BatchFromHDF5Mixin, Iterator):
             class_start_end = dict()
             for one_class in classes:
                 num_images = h5f[one_class].shape[0]
-                class_start_end[one_class] = int(num_images * self.split[0]), int(num_images * self.split[1])
+                if self.split is not None:
+                    class_start_end[one_class] = int(num_images * self.split[0]), int(num_images * self.split[1])
+                else:
+                    class_start_end[one_class] = (0, num_images)
                 self.samples += class_start_end[one_class][1] - class_start_end[one_class][0]
 
                 if image_shape is None:
