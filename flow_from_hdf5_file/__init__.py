@@ -12,8 +12,8 @@ try:
 except ImportError:
     IteratorType = object
 
-from keras.preprocessing.image import array_to_img, img_to_array, load_img
-from keras.preprocessing.image import Iterator
+from tensorflow.keras.preprocessing.image import array_to_img, img_to_array, load_img
+from tensorflow.keras.preprocessing.image import Iterator
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 

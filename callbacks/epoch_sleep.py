@@ -1,4 +1,4 @@
-from keras.callbacks import Callback
+from tensorflow.keras.callbacks import Callback
 import time
 
 
@@ -24,5 +24,4 @@ class SleepAWhile(Callback):
             return
         if hasattr(self, 'train_batch_sleep_interval'):
             if (batch % self.train_batch_sleep_interval) == 0:
-                print("Start batch {} of training; sleep {} seconds".format(batch, self.train_batch_sleep_seconds))
                 time.sleep(self.train_batch_sleep_seconds)
