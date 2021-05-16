@@ -8,12 +8,23 @@ class HistorySaver(Callback):
     def __init__(self, file_name, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.file_name = file_name
+        print(self.file_name)
 
-    def on_epoch_end(self, epoch, logs=None):
+    def on_epoch_begin(self, epoch, logs=None):
         if epoch == 0:
             return
-
-        self.model.history.history['epoch'] = epoch
-        self.model.history.history['timstamp'] = dt.datetime.now()
+        
+        if not isinstance(self.model.history.history.get('epoch'), list):
+            self.model.history.history['epoch'] = list()
+        self.model.history.history['epoch'].append(epoch)
+        
+        if not isinstance(self.model.history.history.get('timestamp'), list):
+            self.model.history.history['timestamp'] = list()
+        self.model.history.history['timestamp'].append(dt.datetime.now())
         with open(self.file_name, 'wb') as hist:
-            pickle.dump(model.history.history, hist)
+            pickle.dump(self.model.history.history, hist)
+        print('HistorySaver writes file \'' + self.file_name + '\'\n')
+            
+    def load_history(self):
+        with open(self.file_name, 'rb') as hist:
+            return pickle.load(hist)
